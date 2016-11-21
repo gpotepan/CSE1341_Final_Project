@@ -12,12 +12,14 @@ int foodx=(round(random(0, 500)));
 int foody=(round(random(0, 500)));
 boolean redo=true;
 boolean stopgame=false;
+
 void setup()
 {
   restart();
   size(500, 500);
   textAlign(CENTER);
 }
+
 void draw() {
   if (stopgame) {
   } else {
@@ -41,7 +43,7 @@ void draw() {
   }
 }
 
-void keyPressed(){
+void keyPressed() {
   if (key == CODED)
   {
     //what angle am I moving in? do not turn back on myself
@@ -53,10 +55,12 @@ void keyPressed(){
     if (keyCode == DOWN && angle!=90 && (heady[1]+8)!=heady[2])
     {
       angle=270;
-    }if (keyCode == LEFT && angle!=0 && (headx[1]-8)!=headx[2])
+    }
+    if (keyCode == LEFT && angle!=0 && (headx[1]-8)!=headx[2])
     {
       angle=180;
-    }if (keyCode == RIGHT && angle!=180 && (headx[1]+8)!=headx[2])
+    }
+    if (keyCode == RIGHT && angle!=180 && (headx[1]+8)!=headx[2])
     {
       angle=0;
     }
