@@ -1,7 +1,7 @@
 //CSE1341 Final Project
 //Grant Potepan
 //Snake Game
-//reference: https://www.openprocessing.org/sketch/50988# byIan151
+//reference: https://www.openprocessing.org/sketch/50988# byIan151 -- used key pressed code and naming convention to keep consistency throughout code
 
 int angle=0;
 int snakesize=3;
@@ -26,13 +26,13 @@ void draw() {
     time+=1;
     fill(255, 0, 255);
     stroke(3);
-    rect(foodx, foody, 8, 8);
+    rect(foodx, foody, 10, 10);
     fill(0);
     stroke(0);
-    rect(0, 0, width, 8);
-    rect(0, height-8, width, 8);
-    rect(0, 0, 8, height);
-    rect(width-8, 0, 8, height);
+    rect(0, 0, width, 10);
+    rect(0, height-10, width, 10);
+    rect(0, 0, 10, height);
+    rect(width-10, 0, 10, height);
     //difficulty (lower number is harder)
     if ((time % 4)==0)
     {
@@ -42,7 +42,10 @@ void draw() {
     }
   }
 }
-
+Snake(){
+  
+  
+// board navigation
 void keyPressed() {
   if (key == CODED)
   {
@@ -70,3 +73,11 @@ void keyPressed() {
     }
   }
 }
+
+void move(){
+  for(int i=snakesize; i>0; i++){
+    if(i!= 1) {
+      headx[i]=headx[i+1];
+      heady[i]=heayy[i+1];
+    }
+    else(
