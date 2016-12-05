@@ -2,82 +2,144 @@
 //Grant Potepan
 //Snake Game
 //reference: https://www.openprocessing.org/sketch/50988# byIan151 -- used key pressed code and naming convention to keep consistency throughout code
+// also used source code to help setup arrays but code used different conventions
+// reference https://www.openprocessing.org/sketch/27164# to help with setup and collision
 
-int angle=0;
-int snakesize=3;
-int time=0;
-int[] headx= new int[round(random(0, 2500))];
-int[] heady= new int[round(random(0, 2500))];
-int foodx=(round(random(0, 500)));
-int foody=(round(random(0, 500)));
-boolean redo=true;
-boolean stopgame=false;
+color col=color(255,255,192);
+color foodColor = color(255,0, 0);
+float speed = 200;
+int cx, cy;
 
-void setup()
-{
-  restart();
-  size(500, 500);
-  textAlign(CENTER);
+int moveX = 0;
+int moveY = 0;
+int snakeX = 0;
+int snakeY = 0;
+int foodX = -1;
+int foodY = -1;
+boolean check = true;
+int []snakesX;
+int []snakesY;
+int snakeSize = 1;
+boolean gameOver = false;
+
+void setup(){
+  size(500,500);
+  background(0);
+  speed = 100;
+  speed= speed/frameRate;
+  snakesX = new int[100];
+  snakesY = new int[100];
+ 
+  cx = width/2;
+  cy = height/2;
+  
+  snakeX = cx-5;
+  snakeY = cy-5;
+  foodX = -1;
+  foodY = -1;
+  gameOver = false;
+  check = true;
+  snakeSize =1;
 }
-
-void draw() {
-  if (stopgame) {
-  } else {
-    time+=1;
-    fill(255, 0, 255);
-    stroke(3);
-    rect(foodx, foody, 10, 10);
-    fill(0);
-    stroke(0);
-    rect(0, 0, width, 10);
-    rect(0, height-10, width, 10);
-    rect(0, 0, 10, height);
-    rect(width-10, 0, 10, height);
-    //difficulty (lower number is harder)
-    if ((time % 4)==0)
-    {
-      travel();
-      display();
-      checkdead();
-    }
+ 
+void draw(){
+  
+  if(speed%10 == 0){
+    background(0);
+    runGame();
+  }
+  speed++;
+}
+void reset(){
+  snakeX = cx-5;
+  snakeY = cy-5;
+  gameOver = false;
+  check = true;
+  snakeSize =1; 
+  moveY = 0;
+  moveX = 0;
+}
+void runGame(){
+  if(gameOver== false){
+  
+    drawfood();
+    drawSnake();
+    snakeMove();
+    ateFood();
+    checkHitSelf();
+  }else{
+      String modelString = "Game Over: Press 'Enter' to Restart";
+      textAlign (CENTER);
+    
+      text(modelString,100,100,40); 
   }
 }
-Snake(){
+void checkHitSelf(){
+   for(int i = 1; i < snakeSize; i++){
+       if(snakeX == snakesX[i] && snakeY== snakesY[i]){
+          gameOver = true; 
+      }
+   }  
+}
+void ateFood(){
+  if(foodX == snakeX && foodY == snakeY){
+     check = true;
+     snakeSize++; 
+  }
+}
+void drawfood(){
+  fill(foodColor);
+  while(check){
+    int x = (int)random(1,500/10);
+    int y =  (int)random(1,500/10);
+    foodX = 5+x*10;
+    foodY = 5+y*10;
+    
+    for(int i = 0; i < snakeSize; i++){
+       if(x == snakesX[i] && y == snakesY[i]){
+         check = true;
+         i = snakeSize;
+       }else{
+         check = false; 
+       }
+    }
+    
+  }
   
+  rect(foodX-5, foodY-5, 10, 10);
+    
+}
+void drawSnake(){
+  fill(col);
+
+  for(int i = 0; i < snakeSize; i++) {
+    int X = snakesX[i];
+    int Y = snakesY[i];
+    rect(X-5,Y-5,10,10);
+  }
   
-// board navigation
+  for(int i = snakeSize; i > 0; i--){
+    snakesX[i] = snakesX[i-1];
+    snakesY[i] = snakesY[i-1];
+  }
+}
+
+void snakeMove(){
+  snakeX += moveX;
+  snakeY += moveY;
+  //collision with wall
+  if(snakeX > 500-5 || snakeX < 5||snakeY > 500-5||snakeY < 5){ 
+     gameOver = true; 
+  }
+  snakesX[0] = snakeX;
+  snakesY[0] = snakeY;
+  
+}
+ 
 void keyPressed() {
-  if (key == CODED)
-  {
-    //what angle am I moving in? do not turn back on myself
-    //naviage screen using direction keys
-    if (keyCode == UP && angle!=270 && (heady[1]-8)!=heady[2])
-    {
-      angle=90;
-    }
-    if (keyCode == DOWN && angle!=90 && (heady[1]+8)!=heady[2])
-    {
-      angle=270;
-    }
-    if (keyCode == LEFT && angle!=0 && (headx[1]-8)!=headx[2])
-    {
-      angle=180;
-    }
-    if (keyCode == RIGHT && angle!=180 && (headx[1]+8)!=headx[2])
-    {
-      angle=0;
-    }
-    if (keyCode == ENTER)
-    {
-      restart();
-    }
-  }
+  if(keyCode == UP) {  if(snakesY[1] != snakesY[0]-10){moveY = -10; moveX = 0;}}
+  if(keyCode == DOWN) {  if(snakesY[1] != snakesY[0]+10){moveY = 10; moveX = 0;}}
+  if(keyCode == LEFT) { if(snakesX[1] != snakesX[0]-10){moveX = -10; moveY = 0;}}
+  if(keyCode == RIGHT) { if(snakesX[1] != snakesX[0]+10){moveX = 10; moveY = 0;}}
+  if(keyCode == ENTER) {reset();}
 }
-
-void move(){
-  for(int i=snakesize; i>0; i++){
-    if(i!= 1) {
-      headx[i]=headx[i+1];
-      heady[i]=heayy[i+1];
-    }
-    else(
