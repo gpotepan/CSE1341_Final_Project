@@ -11,18 +11,18 @@ color foodColor = color(255, 0, 0);
 float speed = 2000;
 int x, y;
 
+int foodX = round(random(0, 10));
+int foodY = round(random(0, 10));
 int moveX = 0;
 int moveY = 0;
 int snakeX = 0;
 int snakeY = 0;
-int foodX = round(random(0, 10));
-int foodY = round(random(0, 10));
 int difficulty = 0;
-boolean alive = true;
 int []snakeLengthX;
 int []snakeLengthY;
 int snakeLength = 1;
-boolean gameOver = false;
+boolean alive = true;
+boolean dead = false;
 
 void setup() {
   size(500, 500);
@@ -36,7 +36,7 @@ void setup() {
   snakeY = y-5;
   foodX = -1;
   foodY = -1;
-  gameOver = false;
+  dead = false;
   alive = true;
   snakeLength =1;
 }
@@ -67,12 +67,12 @@ void drawFood() {
   fill(foodColor);
   rect(foodX-5, foodY-5, 10, 10);
   while (alive) {
-    int x = (int)round(random(1, 500/10));
-    int y =  (int)round(random(1, 500/10));
+    int x = (int)round(random(1, 50));
+    int y =  (int)round(random(1, 50));
     //used from source code (why doesnt foodX = random(0,500); work?)
+    //how do I make it not spawn where the snake is?
     foodX = 5+x*10;
     foodY = 5+y*10;
-
     for (int i = 0; i < snakeLength; i++) {
       if (x == snakeLengthX[i] && y == snakeLengthY[i]) {
         alive = true;
@@ -97,16 +97,20 @@ void drawSnake() {
   }
 }
 
-//if the snake hits itself then the game is over
-void checkCollision() {
-  for (int i = 1; i < snakeLength; i++) {
-    if (snakeX == snakeLengthX[i] && snakeY== snakeLengthY[i]) {
-      gameOver = true;
-    }
+
+void moveSnake() {
+  snakeX += moveX;
+  snakeY += moveY;
+  //if snake goes off the board, game is over
+  if (snakeX > 500 || snakeX < 0||snakeY > 500||snakeY < 0) { 
+    dead = true;
   }
+  snakeLengthX[0] = snakeX;
+  snakeLengthY[0] = snakeY;
 }
+
 void ateFood() {
-  //if the location of the food is = to the location of the head of the snake
+  //if the location of the food is = to the location of the head of the snake then the snake is alive and grows by 3 squares
   if (foodX == snakeX && foodY == snakeY) {
     alive = true;
     //size increase due to each apple consumed 
@@ -114,20 +118,17 @@ void ateFood() {
   }
 }
 
-
-void moveSnake() {
-  snakeX += moveX;
-  snakeY += moveY;
-  //if snake goes off the board, game is over
-  if (snakeX > 500 || snakeX < 0||snakeY > 500||snakeY < 0) { 
-    gameOver = true;
+//if the snake hits itself then the game is over
+void checkCollision() {
+  for (int i = 1; i < snakeLength; i++) {
+    if (snakeX == snakeLengthX[i] && snakeY== snakeLengthY[i]) {
+      dead = true;
+    }
   }
-  snakeLengthX[0] = snakeX;
-  snakeLengthY[0] = snakeY;
 }
 
-//worked with britany in lab to develop working code 
-//! reverses the boolean
+
+//worked with brittni in lab to develop working code 
 void keyPressed() {
   int directionSpeed = 10;
   if (keyCode == UP) {  
@@ -160,7 +161,7 @@ void keyPressed() {
 }
 
 void runGame() {
-  if (gameOver== false) {
+  if (dead== false) {
     //if the game is not over, call these functions
     drawFood();
     drawSnake();
@@ -169,12 +170,13 @@ void runGame() {
     checkCollision();
   } else {
     //the game is over then display the restart instructions
-    String endGameString = "Game Over: Press 'Enter' to Restart. Game Will Begin Immediately";
+    String endGameString = "Score:" + snakeLength + " Game Over: Press 'Enter' to Restart. Game Will Begin Immediately";
     textAlign (CENTER);
     text(endGameString, width/2, height/2);
   }
 }
 
+//how do I make it not move automatically?
 void reset() {
   setup();
 }
